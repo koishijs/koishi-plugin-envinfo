@@ -1,4 +1,4 @@
-import { Context, Schema, version } from 'koishi'
+import { Context, Dict, Schema, version } from 'koishi'
 import { DataService } from '@koishijs/plugin-console'
 import { resolve } from 'path'
 import { helpers } from 'envinfo'
@@ -12,28 +12,13 @@ declare module '@koishijs/plugin-console' {
   }
 }
 
-export interface Payload {
-  os: string
-  cpu: string
-  node: string
-  manager: {
-    name: string
-    version: string
-  }
-  koishi: {
-    core: string
-    agent: string
-  }
-}
+export interface Config {}
 
-export interface Config {
-}
-
-export default class EnvInfo extends DataService<Payload> {
+export default class EnvInfo extends DataService<Dict<Dict<string>>> {
   static using = ['console'] as const
   static schema: Schema<Config> = Schema.object({})
 
-  private task: Promise<Payload>
+  private task: Promise<Dict<Dict<string>>>
 
   constructor(ctx: Context) {
     super(ctx, 'envinfo', { authority: 4 })
@@ -44,21 +29,31 @@ export default class EnvInfo extends DataService<Payload> {
     })
   }
 
-  async _get(): Promise<Payload> {
-    const [os, cpu] = await Promise.all([
+  async _get(): Promise<Dict<Dict<string>>> {
+    const [[, OS], [, CPU]] = await Promise.all([
       helpers.getOSInfo(),
       helpers.getCPUInfo(),
     ])
-    return {
-      os,
-      cpu,
-      node: process.versions.node,
-      manager: which(),
-      koishi: {
-        core: version,
-        agent: process.env.KOISHI_AGENT,
-      },
+    const agent = which()
+    const system = { OS, CPU }
+    const binaries = {
+      Node: process.versions.node
     }
+    if (agent) {
+      if (agent.name === 'yarn') {
+        agent.name = 'Yarn'
+      }
+      binaries[agent.name] = agent.version
+    }
+    const koishi = {
+      Core: version,
+      Console: require('@koishijs/plugin-console/package.json').version,
+    }
+    if (process.env.KOISHI_AGENT) {
+      const [name, version] = process.env.KOISHI_AGENT.split('/')
+      koishi[name] = version
+    }
+    return { system, binaries, koishi }
   }
 
   async get() {
