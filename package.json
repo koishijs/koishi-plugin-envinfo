@@ -1,0 +1,60 @@
+{
+  "name": "koishi-plugin-envinfo",
+  "description": "Display the environment information of your Koishi application",
+  "version": "1.0.0",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "dist"
+  ],
+  "author": "Shigma <shigma10826@gmail.com>",
+  "scripts": {
+    "build": "tsc -b && koishi-console build"
+  },
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koishijs/koishi-plugin-envinfo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/koishijs/koishi-plugin-envinfo/issues"
+  },
+  "homepage": "https://github.com/koishijs/koishi-plugin-envinfo",
+  "keywords": [
+    "bot",
+    "chatbot",
+    "koishi",
+    "plugin",
+    "console",
+    "environment",
+    "information"
+  ],
+  "koishi": {
+    "description": {
+      "en": "Display the environment information of your Koishi application",
+      "zh": "在控制台中显示 Koishi 应用的环境信息"
+    },
+    "services": {
+      "required": [
+        "console"
+      ]
+    }
+  },
+  "peerDependencies": {
+    "@koishijs/plugin-console": "^4.8.0",
+    "koishi": "^4.10.0"
+  },
+  "devDependencies": {
+    "@koishijs/client": "^4.8.1",
+    "@koishijs/plugin-console": "^4.8.1",
+    "@types/envinfo": "^7.8.1",
+    "@types/node": "^17.0.45",
+    "koishi": "^4.10.6",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "envinfo": "^7.8.1",
+    "which-pm-runs": "^1.1.0"
+  }
+}
